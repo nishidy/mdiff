@@ -107,11 +107,12 @@ func (rs *result) Stat(n uint32, fd *os.File) {
 			break
 		}
 		if line == idxlist[idx] {
-			fmt.Printf("%d: %s\n", line, str)
+			fmt.Printf("L%d: %s\n", line, str)
 			idx += 1
 		}
 		line += 1
 	}
+	fmt.Println("")
 
 }
 
