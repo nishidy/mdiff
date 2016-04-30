@@ -59,15 +59,6 @@ func (rs *result) Diff(hashes1 hashelemlist, idx1 uint32, size1 uint32, hashes2 
 	if hashes1[idx1].hash == hashes2[idx2].hash {
 		rs.Diff(hashes1, idx1+1, size1, hashes2, idx2+1, size2)
 	} else {
-		/*
-			if (size1 - idx1) > (size2 - idx2) {
-				rs.Record(1, hashes1[idx1].idx)
-				rs.Diff(hashes1, idx1+1, size1, hashes2, idx2, size2)
-			} else if (size1 - idx1) < (size2 - idx2) {
-				rs.Record(1, hashes1[idx1].idx)
-				rs.Diff(hashes1, idx1+1, size1, hashes2, idx2, size2)
-			} else {
-		*/
 		if hashes1[idx1].hash < hashes2[idx2].hash {
 			rs.Record(1, hashes1[idx1].idx)
 			rs.Diff(hashes1, idx1+1, size1, hashes2, idx2, size2)
@@ -75,7 +66,6 @@ func (rs *result) Diff(hashes1 hashelemlist, idx1 uint32, size1 uint32, hashes2 
 			rs.Record(2, hashes2[idx2].idx)
 			rs.Diff(hashes1, idx1, size1, hashes2, idx2+1, size2)
 		}
-		//}
 	}
 
 }
