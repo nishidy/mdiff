@@ -38,4 +38,13 @@ sed -i -e 's/https/spdy/g' Diff_.html
 
 go run mdiff.go Diff.html Diff_.html
 
+echo "Test case 3."
+for i in {0..10000}
+do
+	echo $RANDOM >> rand.txt
+done
+
+sort rand.txt > rand_.txt
+
+go run mdiff.go rand.txt rand_.txt
 
