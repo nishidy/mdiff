@@ -19,11 +19,17 @@ func (a hashelemlist) Len() int           { return len(a) }
 func (a hashelemlist) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 func (a hashelemlist) Less(i, j int) bool { return a[i].hash < a[j].hash }
 
+type uint32list []uint32
+
+func (a uint32list) Len() int           { return len(a) }
+func (a uint32list) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a uint32list) Less(i, j int) bool { return a[i] < a[j] }
+
 type result struct {
 	fname1   string
 	fname2   string
-	idxlist1 []uint32
-	idxlist2 []uint32
+	idxlist1 uint32list
+	idxlist2 uint32list
 }
 
 func (rs *result) Record(n uint32, idx uint32) {
@@ -53,19 +59,20 @@ func (rs *result) Diff(hashes1 hashelemlist, idx1 uint32, size1 uint32, hashes2 
 	if hashes1[idx1].hash == hashes2[idx2].hash {
 		rs.Diff(hashes1, idx1+1, size1, hashes2, idx2+1, size2)
 	} else {
-		if (size1 - idx1) < (size2 - idx2) {
-			rs.Record(2, hashes2[idx2].idx)
-			rs.Diff(hashes1, idx1, size1, hashes2, idx2+1, size2)
-		} else if (size1 - idx1) > (size2 - idx2) {
+		if hashes1[idx1].hash < hashes2[idx2].hash {
 			rs.Record(1, hashes1[idx1].idx)
 			rs.Diff(hashes1, idx1+1, size1, hashes2, idx2, size2)
 		} else {
-			rs.Record(1, hashes1[idx1].idx)
 			rs.Record(2, hashes2[idx2].idx)
-			rs.Diff(hashes1, idx1+1, size1, hashes2, idx2+1, size2)
+			rs.Diff(hashes1, idx1, size1, hashes2, idx2+1, size2)
 		}
 	}
 
+}
+
+func (rs *result) SortList() {
+	sort.Sort(rs.idxlist1)
+	sort.Sort(rs.idxlist2)
 }
 
 func (rs *result) Stat(n uint32, fd *os.File) {
@@ -169,6 +176,8 @@ func RunStat(rs *result) {
 		os.Exit(-1)
 	}
 	defer fd2.Close()
+
+	rs.SortList()
 
 	rs.Stat(1, fd1)
 	rs.Stat(2, fd2)
